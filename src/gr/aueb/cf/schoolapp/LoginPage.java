@@ -77,13 +77,11 @@ public class LoginPage extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String userName = textUsername.getText();
 				String password = passwordField.getText();
-				Dashboard dashboard = new Dashboard();
 				if(userName.equals("admin") && password.equals("12345")) {
-					JOptionPane.showMessageDialog(btnLogin, "You have succesfully logged in.");
 					Main.getLoginPage().setVisible(false);
 					Main.getDashboard().setVisible(true);
 				} else {
-					JOptionPane.showMessageDialog(btnLogin, "Wrong Username or Password");
+					JOptionPane.showMessageDialog(btnLogin, "Wrong Username or Password", "Αδυναμία σύνδεσης", JOptionPane.ERROR_MESSAGE);
 				}
 				
 			}

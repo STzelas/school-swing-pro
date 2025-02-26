@@ -12,6 +12,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import java.awt.Font;
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Dashboard extends JFrame {
 
@@ -20,6 +26,12 @@ public class Dashboard extends JFrame {
 
 	
 	public Dashboard() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+				String sql = "jdbc:mysql://localhost:3306/xxx?serverTimezone=UTC" // xxx είναι η βάση (θα φτιαχτεί)
+			}
+		});
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1049, 658);
 		contentPane = new JPanel();
@@ -96,15 +108,47 @@ public class Dashboard extends JFrame {
 		nav.add(lblTeachersPage);
 		
 		JLabel lblInsertTeacher = new JLabel("Εισαγωγή εκπαιδευτή");
+		lblInsertTeacher.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblInsertTeacher.setForeground(Color.BLUE);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblInsertTeacher.setForeground(Color.WHITE);
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Main.getDashboard().setEnabled(false);
+				Main.getInsertPage().setVisible(true);
+				Main.getInsertPage().setEnabled(true);
+			}
+		});
 		lblInsertTeacher.setHorizontalAlignment(SwingConstants.LEFT);
 		lblInsertTeacher.setForeground(Color.WHITE);
-		lblInsertTeacher.setBounds(32, 106, 136, 34);
+		lblInsertTeacher.setBounds(30, 107, 152, 14);
 		nav.add(lblInsertTeacher);
 		
 		JLabel lblShowTeacher = new JLabel("Προβολή εκπαιδευτών");
+		lblShowTeacher.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblShowTeacher.setForeground(Color.BLUE);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblShowTeacher.setForeground(Color.WHITE);
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Main.getDashboard().setEnabled(false);
+				Main.getShowTeacherPage().setVisible(true);
+				Main.getShowTeacherPage().setEnabled(true);
+			}
+		});
 		lblShowTeacher.setHorizontalAlignment(SwingConstants.LEFT);
 		lblShowTeacher.setForeground(Color.WHITE);
-		lblShowTeacher.setBounds(32, 78, 136, 34);
+		lblShowTeacher.setBounds(30, 84, 136, 14);
 		nav.add(lblShowTeacher);
 		
 		JLabel lblQuality = new JLabel("Ποιότητα στην Εκπαίδευση");
@@ -129,15 +173,27 @@ public class Dashboard extends JFrame {
 		contentPane.add(lblInsertRecord);
 		
 		JButton btnConnect = new JButton("Σύνδεση");
+		btnConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getDashboard().setEnabled(false);
+				Main.getShowTeacherPage().setVisible(true);
+				Main.getShowTeacherPage().setEnabled(true);
+			}
+		});
 		btnConnect.setForeground(Color.WHITE);
-		btnConnect.setEnabled(false);
 		btnConnect.setBackground(new Color(0, 136, 0));
 		btnConnect.setBounds(280, 252, 113, 46);
 		contentPane.add(btnConnect);
 		
 		JButton btnConnect_2 = new JButton("Σύνδεση");
+		btnConnect_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getDashboard().setEnabled(false);
+				Main.getInsertPage().setVisible(true);
+				Main.getInsertPage().setEnabled(true);
+			}
+		});
 		btnConnect_2.setForeground(Color.WHITE);
-		btnConnect_2.setEnabled(false);
 		btnConnect_2.setBackground(new Color(0, 136, 0));
 		btnConnect_2.setBounds(280, 439, 113, 46);
 		contentPane.add(btnConnect_2);
