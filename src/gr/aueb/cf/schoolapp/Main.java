@@ -8,6 +8,8 @@ public class Main {
 	private static final Dashboard Dashboard = new Dashboard();
 	private static final ShowTeacherPage ShowTeacherPage = new ShowTeacherPage();
 	private static final InsertPage InsertPage = new InsertPage();
+	private static final ViewPage ViewPage = new ViewPage();
+	private static final UpdatePage UpdatePage = new UpdatePage();
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -27,6 +29,12 @@ public class Main {
 					
 					InsertPage.setVisible(false);
 					InsertPage.setLocationRelativeTo(null);
+					
+					ViewPage.setVisible(false);
+					ViewPage.setLocationRelativeTo(null);
+					
+					UpdatePage.setVisible(false);
+					UpdatePage.setLocationRelativeTo(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -57,6 +65,16 @@ public class Main {
 
 	public static InsertPage getInsertPage() {
 		return InsertPage;
+	}
+
+
+	public static ViewPage getViewpage() {
+		return ViewPage;
+	}
+
+
+	public static UpdatePage getUpdatePage() {
+		return UpdatePage;
 	}
 	
 }

@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
@@ -19,11 +20,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Rectangle;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ShowTeacherPage extends JFrame {
 
@@ -31,10 +40,17 @@ public class ShowTeacherPage extends JFrame {
 	private JPanel contentPane;
 	private JTextField textLastnameSearch;
 	private JTable table;
-	private JTable table_1;
+	private DefaultTableModel model = new DefaultTableModel();
+	private String selectedUUID;
 
 	
 	public ShowTeacherPage() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowActivated(WindowEvent e) {
+				buildTable();
+			}
+		});
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1049, 771);
 		contentPane = new JPanel();
@@ -96,18 +112,37 @@ public class ShowTeacherPage extends JFrame {
 		contentPane.add(lblQuality);
 		
 		JButton btnShow = new JButton("Προβολή");
+		btnShow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getShowTeacherPage().setEnabled(false);
+				Main.getViewpage().setEnabled(true);
+				Main.getViewpage().setVisible(true);
+			}
+		});
 		btnShow.setForeground(Color.WHITE);
 		btnShow.setBackground(new Color(0, 136, 0));
 		btnShow.setBounds(816, 290, 183, 46);
 		contentPane.add(btnShow);
 		
 		JButton btnEdit = new JButton("Επεξεργασία");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.getShowTeacherPage().setEnabled(false);
+				Main.getUpdatePage().setEnabled(true);
+				Main.getUpdatePage().setVisible(true);
+			}
+		});
 		btnEdit.setForeground(Color.WHITE);
 		btnEdit.setBackground(new Color(0, 136, 0));
 		btnEdit.setBounds(816, 347, 183, 46);
 		contentPane.add(btnEdit);
 		
 		JButton btnDelete = new JButton("Διαγραφή");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doDelete(selectedUUID);
+			}
+		});
 		btnDelete.setForeground(Color.WHITE);
 		btnDelete.setBackground(new Color(0, 136, 0));
 		btnDelete.setBounds(816, 403, 183, 46);
@@ -128,12 +163,23 @@ public class ShowTeacherPage extends JFrame {
 		contentPane.add(btnClose);
 		
 		JButton btnSearch = new JButton("Αναζήτηση");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				buildTable();
+			}
+		});
 		btnSearch.setForeground(Color.WHITE);
 		btnSearch.setBackground(new Color(0, 136, 0));
 		btnSearch.setBounds(332, 157, 183, 46);
 		contentPane.add(btnSearch);
 		
 		JButton btnClearAll = new JButton("Εκκαθάριση");
+		btnClearAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textLastnameSearch.setText("");
+				buildTable();
+			}
+		});
 		btnClearAll.setForeground(Color.WHITE);
 		btnClearAll.setBackground(new Color(120, 201, 209));
 		btnClearAll.setBounds(525, 157, 183, 46);
@@ -150,23 +196,101 @@ public class ShowTeacherPage extends JFrame {
 		lblNewLabel.setBounds(60, 172, 56, 14);
 		contentPane.add(lblNewLabel);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		table = new JTable();
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                // Check if the selection is still adjusting
+                if (!e.getValueIsAdjusting()) {
+                    // Get the selected row index
+                    int selectedRow = table.getSelectedRow();
+
+                    // Check if a row is selected
+                    if (selectedRow != -1) {
+                        // Get data from the selected row
+                        //String selectedStr = (String) model.getValueAt(selectedRow, 0); // ID column
+                        //selectedId = Integer.parseInt(selectedStr);
+                        //selectedId = Integer.parseInt(selectedStr);
+                    	selectedUUID = (String) model.getValueAt(selectedRow, 0);
+                        
+                    }
+                }
+            }
+        });
+		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBorder(new LineBorder(new Color(210, 210, 210)));
 		scrollPane.setBounds(60, 240, 665, 396);
 		contentPane.add(scrollPane);
 		
-		table_1 = new JTable();
-		table_1.setModel(new DefaultTableModel(
+		
+		
+		table.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
-				"\u039A\u03C9\u03B4\u03B9\u03BA\u03CC\u03C2", "\u038C\u03BD\u03BF\u03BC\u03B1", "\u0395\u03C0\u03AF\u03B8\u03B5\u03C4\u03BF"
+				"Κωδικός", "Όνομα", "Επώνυμο"
 			}
 		));
-		table_1.getColumnModel().getColumn(0).setPreferredWidth(236);
-		table_1.getColumnModel().getColumn(1).setPreferredWidth(174);
-		table_1.getColumnModel().getColumn(2).setPreferredWidth(208);
-		scrollPane.setViewportView(table_1);
+		table.setBounds(57, 192, 507, 307);
+		model = (DefaultTableModel) table.getModel();
+		
 	
 	}
+	
+	private void buildTable() {
+		String sql = "SELECT uuid, firstname, lastname FROM teachers WHERE lastname LIKE ?";
+		Connection connection = Dashboard.getConnection();
+		
+		try(PreparedStatement ps = connection.prepareStatement(sql);) {
+			
+			
+			ps.setString(1, textLastnameSearch.getText().trim() + "%");
+			ResultSet rs = ps.executeQuery();
+			
+			model.setRowCount(0); // clears table
+			while(rs.next()) {
+				Object[] row = {
+						rs.getString("uuid"),
+						rs.getString("firstname"),
+						rs.getString("lastname")
+				};
+				model.addRow(row);
+			}
+			
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Λάθος στην αναζήτηση", "Error.", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	public String getSelectedUUID() {
+		return selectedUUID;
+	}
+	
+	private void doDelete(String uuid) {
+//		String sql = "DELETE FROM teachers WHERE id = ?";
+		String sql = "DELETE FROM teachers WHERE uuid = ?";
+		Connection conn = Dashboard.getConnection();
+		
+		try (PreparedStatement ps = conn.prepareStatement(sql)) {
+			
+			//ps.setInt(1, id);
+			ps.setString(1, uuid);
+			
+			int answer = JOptionPane.showConfirmDialog(null, "Είστε σίγουρη/ος", "Διαγραφή", 
+					JOptionPane.YES_NO_OPTION);
+			if (answer == JOptionPane.YES_OPTION) {
+				int rowsAffected = ps.executeUpdate();
+				JOptionPane.showMessageDialog(null, rowsAffected + " γρααμμή/ες διαγράφηκαν", "Διαγραφή", 
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				return;
+			}							
+		} catch (SQLException ex) {
+			//ex.printStackTrace();
+			JOptionPane.showMessageDialog(null,  "Delete error", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	
 }

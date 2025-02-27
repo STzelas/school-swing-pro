@@ -18,18 +18,31 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Dashboard extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private static Connection connection;
 
 	
 	public Dashboard() {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
-				String sql = "jdbc:mysql://localhost:3306/xxx?serverTimezone=UTC" // xxx είναι η βάση (θα φτιαχτεί)
+				String sql = "jdbc:mysql://localhost:3306/school7dbpro?serverTimezone=UTC"; // xxx είναι η βάση (θα φτιαχτεί)
+				String username = "user7pro";
+				String password = "12345";
+				
+				try {
+					connection = DriverManager.getConnection(sql, username, password);
+					System.out.println("Connection Success");
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -172,35 +185,40 @@ public class Dashboard extends JFrame {
 		lblInsertRecord.setBounds(280, 365, 481, 21);
 		contentPane.add(lblInsertRecord);
 		
-		JButton btnConnect = new JButton("Σύνδεση");
-		btnConnect.addActionListener(new ActionListener() {
+		JButton btnNext = new JButton("Συνέχεια");
+		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Main.getDashboard().setEnabled(false);
 				Main.getShowTeacherPage().setVisible(true);
 				Main.getShowTeacherPage().setEnabled(true);
 			}
 		});
-		btnConnect.setForeground(Color.WHITE);
-		btnConnect.setBackground(new Color(0, 136, 0));
-		btnConnect.setBounds(280, 252, 113, 46);
-		contentPane.add(btnConnect);
+		btnNext.setForeground(Color.WHITE);
+		btnNext.setBackground(new Color(0, 136, 0));
+		btnNext.setBounds(280, 252, 113, 46);
+		contentPane.add(btnNext);
 		
-		JButton btnConnect_2 = new JButton("Σύνδεση");
-		btnConnect_2.addActionListener(new ActionListener() {
+		JButton btnNext_2 = new JButton("Συνέχεια");
+		btnNext_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Main.getDashboard().setEnabled(false);
 				Main.getInsertPage().setVisible(true);
 				Main.getInsertPage().setEnabled(true);
 			}
 		});
-		btnConnect_2.setForeground(Color.WHITE);
-		btnConnect_2.setBackground(new Color(0, 136, 0));
-		btnConnect_2.setBounds(280, 439, 113, 46);
-		contentPane.add(btnConnect_2);
+		btnNext_2.setForeground(Color.WHITE);
+		btnNext_2.setBackground(new Color(0, 136, 0));
+		btnNext_2.setBounds(280, 439, 113, 46);
+		contentPane.add(btnNext_2);
 		
 		JLabel lblInsertMessage = new JLabel("Εισαγωγή Εκπαιδευτή στο μητρώο του Coding Factory");
 		lblInsertMessage.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblInsertMessage.setBounds(280, 397, 540, 31);
 		contentPane.add(lblInsertMessage);
 	}
+
+
+	public static Connection getConnection() {
+		return connection;
+	}	
 }
